@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "cyber.jwtExpire",
+      "type": "java.lang.String",
+      "description": "JWT过期时间"
+    }
+  ]
+}

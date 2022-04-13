@@ -1,0 +1,16 @@
+FROM java:alpine
+
+ENV HOME_PATH /home
+ENV ARTIFACTID bast-proxy
+
+VOLUME HOME_PATH/logs
+
+RUN echo "Asia/Shanghai" > /etc/timezone
+
+WORKDIR $HOME_PATH
+
+EXPOSE 8611
+
+ADD bast-police-*.jar $HOME_PATH/$ARTIFACTID.jar
+
+ENTRYPOINT ["java", "-jar","-Xms1024M","-Xmx1024M",  "bast-proxy.jar", "--spring.profiles.active=dev"]

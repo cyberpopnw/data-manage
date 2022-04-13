@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bastion.cyber.mapper.CyberInviterMapper">
+  <resultMap id="BaseResultMap" type="com.bastion.cyber.model.po.CyberInviter">
+    <!--@mbg.generated-->
+    <!--@Table cyber_business.cyber_inviter-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="uid" jdbcType="BIGINT" property="uid" />
+    <result column="inviter_code" jdbcType="VARCHAR" property="inviterCode" />
+    <result column="level" jdbcType="BOOLEAN" property="level" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, `uid`, inviter_code, `level`, create_time, update_time
+  </sql>
+</mapper>

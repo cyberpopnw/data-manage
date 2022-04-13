@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bastion.cyber.mapper.CyberBuriedPointPoMapper">
+  <resultMap id="BaseResultMap" type="com.bastion.cyber.model.po.CyberBuriedPointPo">
+    <!--@mbg.generated-->
+    <!--@Table cyber_business.cyber_buried_point-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="uid" jdbcType="BIGINT" property="uid" />
+    <result column="ip" jdbcType="VARCHAR" property="ip" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="method" jdbcType="VARCHAR" property="method" />
+    <result column="params" jdbcType="LONGVARCHAR" property="params" />
+    <result column="ip_source" jdbcType="VARCHAR" property="ipSource" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, `uid`, ip, url, `method`, params, ip_source, create_time, update_time
+  </sql>
+</mapper>
