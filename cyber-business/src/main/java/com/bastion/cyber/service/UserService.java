@@ -11,6 +11,7 @@ import com.bastion.cyber.model.dto.UserDto;
  * @author zyg
  */
 public interface UserService {
+
     ReturnObject<Object> info(String addr);
 
     ReturnObject<Object> auth(LoginUserDto loginUserDto);
@@ -22,4 +23,8 @@ public interface UserService {
     ReturnObject<Object> update(UserDto userDto);
 
     ReturnObject<Object> report(ReportDto reportDto);
+
+    ReturnObject<Object> getboolean(String addr);
+
+    ReturnObject<Object> getPersonal(String addr);
 }

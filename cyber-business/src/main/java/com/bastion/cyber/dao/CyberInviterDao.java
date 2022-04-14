@@ -1,6 +1,7 @@
 package com.bastion.cyber.dao;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.bastion.cyber.constant.ReturnObject;
 import com.bastion.cyber.mapper.CyberInviterMapper;
 import com.bastion.cyber.model.bo.InviterBo;
@@ -41,5 +42,11 @@ public class CyberInviterDao {
         } catch (Exception e) {
             return new ReturnObject<>(INTERNAL_SERVER_ERR, e);
         }
+    }
+
+    public CyberInviter getuid(Long getid) {
+        QueryWrapper<CyberInviter> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(CyberInviter.COL_UID, getid);
+        return  cyberInviterMapper.selectOne(queryWrapper);
     }
 }

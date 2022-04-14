@@ -29,4 +29,9 @@ public class CyberInviterServiceImpl extends ServiceImpl<CyberInviterMapper, Cyb
     public ReturnObject<Object> findBy(InviterBo inviterBo) {
         return cyberInviterDao.findBy(inviterBo);
     }
+
+    @Override
+    public CyberInviter getuid(Long getid) {
+        return cyberInviterDao.getuid(getid);
+    }
 }

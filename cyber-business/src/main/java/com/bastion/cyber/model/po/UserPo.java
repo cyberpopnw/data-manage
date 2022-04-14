@@ -58,4 +58,6 @@ public class UserPo extends BasePo {
     public static final String COL_CREATE_TIME = "create_time";
 
     public static final String COL_UPDATE_TIME = "update_time";
+
+    public static final String COL_INVSTRING = "inviter_id";
 }

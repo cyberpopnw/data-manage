@@ -1,14 +1,18 @@
 package com.bastion.cyber.dao;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.bastion.cyber.mapper.UserMapper;
 import com.bastion.cyber.constant.ReturnObject;
+import com.bastion.cyber.mapper.UserMapper;
 import com.bastion.cyber.model.dto.UserDto;
+import com.bastion.cyber.model.po.CyberInviter;
 import com.bastion.cyber.model.po.UserPo;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import java.util.List;
 
 import static com.bastion.cyber.constant.ReturnNo.INTERNAL_SERVER_ERR;
 
@@ -59,5 +63,34 @@ public class UserDao {
         } catch (Exception e) {
             return new ReturnObject<>(INTERNAL_SERVER_ERR, e);
         }
+    }
+
+    public ReturnObject<Object> getboolean(String addr) {
+        QueryWrapper<UserPo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(UserPo.COL_ADDR, addr)
+                .eq("role", 2);
+        UserPo userPo = null;
+        try {
+            userPo = userMapper.selectOne(queryWrapper);
+            return new ReturnObject<>(userPo != null);
+        } catch (Exception e) {
+            return new ReturnObject<>(userPo != null);
+        }
+    }
+
+
+    public Long getid(String addr) {
+        QueryWrapper<UserPo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(UserPo.COL_ADDR, addr);
+        return userMapper.selectOne(queryWrapper).getId();
+    }
+
+    public ReturnObject<Object> getPersonal(CyberInviter cyberInviter) {
+        QueryWrapper<UserPo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(UserPo.COL_INVSTRING, cyberInviter.getId());
+        List userPos = userMapper.selectList(queryWrapper);
+        String inviterCode = cyberInviter.getInviterCode();
+        userPos.add(inviterCode);
+        return new ReturnObject<>(userPos);
     }
 }

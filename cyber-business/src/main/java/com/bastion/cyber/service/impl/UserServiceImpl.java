@@ -148,6 +148,18 @@ public class UserServiceImpl implements UserService {
         return new ReturnObject<>(new AccessTokenVo(jwt));
     }
 
+    @Override
+    public ReturnObject<Object> getboolean(String addr) {
+        return userDao.getboolean(addr);
+    }
+
+    @Override
+    public ReturnObject<Object> getPersonal(String addr) {
+        Long getid = userDao.getid(addr);
+        CyberInviter cyberInviter   = cyberInviterService.getuid(getid);
+        return userDao.getPersonal(cyberInviter);
+    }
+
     private UserPo findOrCreateUser(String addr) {
         UserDto userDto = UserDto.builder().addr(addr).build();
         ReturnObject<Object> byAddr = userDao.findBy(userDto);
