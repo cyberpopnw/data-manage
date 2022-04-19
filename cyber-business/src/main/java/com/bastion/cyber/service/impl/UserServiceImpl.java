@@ -156,7 +156,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ReturnObject<Object> getPersonal(String addr) {
         Long getid = userDao.getid(addr);
-        CyberInviter cyberInviter   = cyberInviterService.getuid(getid);
+        CyberInviter cyberInviter = cyberInviterService.getuid(getid);
         return userDao.getPersonal(cyberInviter);
     }
 
@@ -215,6 +215,7 @@ public class UserServiceImpl implements UserService {
             // 不合法直接返回错误
             ExceptionCast.cast(AUTH_INVALID_ADDR);
         }
+
         // 校验签名信息
         if (!Web3Util.validate(signature, nonce, publicAddress)) {
             ExceptionCast.cast(AUTH_INVALID_JWT);
