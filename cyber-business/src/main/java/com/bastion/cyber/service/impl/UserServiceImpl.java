@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.web3j.crypto.WalletUtils;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -159,6 +160,22 @@ public class UserServiceImpl implements UserService {
         CyberInviter cyberInviter = cyberInviterService.getuid(getid);
         return userDao.getPersonal(cyberInviter);
     }
+
+    @Override
+    public List findAllAddress() {
+        return userDao.findAllAddress();
+    }
+
+    @Override
+    public void saveCoin(int mubaisize, int fujisize, String address) {
+        userDao.saveCoin(mubaisize, fujisize,address);
+    }
+
+    @Override
+    public void updateDownload(String address) {
+        userDao.updateDownload(address);
+    }
+
 
     private UserPo findOrCreateUser(String addr) {
         UserDto userDto = UserDto.builder().addr(addr).build();

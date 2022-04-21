@@ -18,17 +18,26 @@ import lombok.NoArgsConstructor;
 @Builder
 @TableName(value = "`cyber_user`")
 public class UserPo extends BasePo {
+    public static final String COL_ID = "id";
+    public static final String COL_ADDR = "addr";
+    public static final String COL_NAME = "name";
+    public static final String COL_STATUS = "status";
+    public static final String COL_CREATE_TIME = "create_time";
+    public static final String COL_UPDATE_TIME = "update_time";
+    public static final String COL_INVSTRING = "inviter_id";
+    public static final String COL_MUBAICOIN = "mubai_coin";
+    public static final String COL_FUJICOIN = "fuji_coin";
+    public static final String COL_DOWNLOAD = "download";
+
     @TableId(value = "id", type = IdType.AUTO)
     @ApiModelProperty(value = "")
     private Long id;
-
     /**
      * 钱包地址
      */
     @TableField(value = "addr")
     @ApiModelProperty(value = "钱包地址")
     private String addr;
-
     /**
      * 用户昵称
      */
@@ -36,7 +45,6 @@ public class UserPo extends BasePo {
     @ApiModelProperty(value = "用户昵称")
     private String name;
     private String nonce;
-
     /**
      * 状态 0:封禁 1:正常
      */
@@ -46,18 +54,13 @@ public class UserPo extends BasePo {
     private Byte role;
     @TableField(value = "`inviter_id`")
     private Long inviterId;
-
-    public static final String COL_ID = "id";
-
-    public static final String COL_ADDR = "addr";
-
-    public static final String COL_NAME = "name";
-
-    public static final String COL_STATUS = "status";
-
-    public static final String COL_CREATE_TIME = "create_time";
-
-    public static final String COL_UPDATE_TIME = "update_time";
-
-    public static final String COL_INVSTRING = "inviter_id";
+    @TableField(value = "`mubai_coin`")
+    @ApiModelProperty(value = "mubai币个数")
+    private Long mubaiCoin;
+    @TableField(value = "`fuji_coin`")
+    @ApiModelProperty(value = "fuji币个数")
+    private Long fujiCoin;
+    @TableField(value = "`download`")
+    @ApiModelProperty(value = "是否下载")
+    private Long download;
 }

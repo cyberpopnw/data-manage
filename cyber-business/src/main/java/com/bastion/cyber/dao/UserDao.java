@@ -5,11 +5,13 @@ import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.bastion.cyber.constant.ReturnObject;
 import com.bastion.cyber.mapper.UserMapper;
 import com.bastion.cyber.model.dto.UserDto;
 import com.bastion.cyber.model.po.CyberInviter;
 import com.bastion.cyber.model.po.UserPo;
+import com.bastion.cyber.utils.HttpURLConnectionUtil;
 import com.bastion.cyber.utils.RedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -110,12 +112,17 @@ public class UserDao {
         for (int i = 0; i < list.size(); i++) {
             String addr = String.valueOf(list.get(i).get("addr"));
             String hashrate = String.valueOf(get(addr));
-            if (redisUtils.hasKey(addr)) {
-                list.get(i).put("connectWallet", false);
-            } else {
+
+            if (redisUtils.hasKey("connectWallet-" + addr)) {
                 list.get(i).put("connectWallet", true);
+            } else {
+                list.get(i).put("connectWallet", false);
             }
+
             list.get(i).put("hashrate", hashrate);
+            long expire = redisUtils.getExpire("connectWallet-" + addr);
+            long onlineTime = 24 * 60 * 60 - expire;
+            list.get(i).put("onlineTime", onlineTime);
         }
         String inviterCode = cyberInviter.getInviterCode();
         Map inviterCodemap = new HashMap();
@@ -123,6 +130,7 @@ public class UserDao {
         list.add(inviterCodemap);
         return new ReturnObject<>(list);
     }
+
 
     public Object get(String address) {
         Map<String, Integer> map = new HashMap<>();
@@ -138,5 +146,29 @@ public class UserDao {
             }
         }
         return hashrate;
+    }
+
+    public List findAllAddress() {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.select("addr");
+        List list = userMapper.selectList(queryWrapper);
+        return list;
+    }
+
+
+    public void saveCoin(int mubaisize, int fujisize, String address) {
+        UpdateWrapper updateWrapper = new UpdateWrapper();
+        updateWrapper.set(UserPo.COL_MUBAICOIN, mubaisize);
+        updateWrapper.set(UserPo.COL_FUJICOIN, fujisize);
+        updateWrapper.eq(UserPo.COL_ADDR, address);
+
+        userMapper.update(null, updateWrapper);
+    }
+
+    public void updateDownload(String address) {
+        UpdateWrapper<UserPo> updateDownload = new UpdateWrapper<UserPo>();
+        updateDownload.set(UserPo.COL_DOWNLOAD, 1);
+        updateDownload.eq("addr", address);
+        userMapper.update(null, updateDownload);
     }
 }

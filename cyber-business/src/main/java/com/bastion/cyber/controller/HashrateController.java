@@ -2,6 +2,7 @@ package com.bastion.cyber.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.bastion.cyber.model.vo.GeneralFormatVo;
+import com.bastion.cyber.service.UserService;
 import com.bastion.cyber.utils.RedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -28,11 +29,15 @@ public class HashrateController {
             add("connectWallet");
             add("loginGame");
             add("buyBox");
+            add("downloadGame");
         }
     };
 
     @Autowired
     private RedisUtils redisUtils;
+
+    @Autowired
+    private UserService userService;
 
 
     @RequestMapping("general")
@@ -43,17 +48,20 @@ public class HashrateController {
         //过期时间代表一天
         redisUtils.set(generalFormatVo.getAction() + "-" + generalFormatVo.getAddress()
                 , JSONObject.toJSONString(generalFormatVo), 24 * 60 * 60);
+        if (generalFormatVo.getAction() == "downloadGame") {
+            userService.updateDownload(generalFormatVo.getAddress());
+        }
         return "";
     }
 
 
     //当前用户算力
-    @RequestMapping("get")
     public Object get(String address) {
         Map<String, Integer> map = new HashMap<>();
         map.put("connectWallet", 2);
         map.put("loginGame", 2);
         map.put("buyBox", 1);
+        map.put("downloadGame", 0);
 
         int hashrate = 0;
         for (int i = 0; i < list.size(); i++) {

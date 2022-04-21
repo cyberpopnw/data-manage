@@ -35,6 +35,7 @@ public class CyberInviterDao {
     @Transactional(readOnly = true)
     public ReturnObject<Object> findBy(InviterBo inviterBo) {
         String inviterCode = inviterBo.getInviterCode();
+
         LambdaQueryWrapper<CyberInviter> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(!StringUtils.isEmpty(inviterCode), CyberInviter::getInviterCode, inviterCode);
         try {
