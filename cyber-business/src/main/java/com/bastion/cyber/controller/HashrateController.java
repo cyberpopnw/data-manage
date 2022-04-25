@@ -49,7 +49,7 @@ public class HashrateController {
         redisUtils.set(generalFormatVo.getAction() + "-" + generalFormatVo.getAddress()
                 , JSONObject.toJSONString(generalFormatVo), 24 * 60 * 60);
         if (generalFormatVo.getAction() == "downloadGame") {
-            userService.updateDownload(generalFormatVo.getAddress());
+            userService.updateDownload(generalFormatVo.getAddress().toLowerCase());
         }
         return "";
     }

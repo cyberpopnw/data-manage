@@ -1,0 +1,66 @@
+package cyber.dealer.sys.domain;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import java.io.Serializable;
+import java.util.Date;
+import lombok.Data;
+
+/**
+ * 
+ * @TableName cyber_users
+ */
+@TableName(value ="cyber_users")
+@Data
+public class CyberUsers implements Serializable {
+    /**
+     * 主键|邀请人id
+     */
+    @TableId
+    private Long id;
+
+    /**
+     * 被邀请id
+     */
+    private Long invId;
+
+    /**
+     * 地址
+     */
+    private String address;
+
+    /**
+     * 用户等级
+     */
+    private Integer level;
+
+    /**
+     * 币总数
+     */
+    private Long fujiCoin;
+
+    /**
+     * 币总数
+     */
+    private Long mubaiCoin;
+
+    /**
+     * 是否下载
+     */
+    private Integer download;
+
+    /**
+     * 创建时间
+     */
+    private Date createTime;
+
+    /**
+     * 更新时间
+     */
+    private Date updateTime;
+
+    @TableField(exist = false)
+    private static final long serialVersionUID = 1L;
+}

@@ -137,6 +137,7 @@ public class UserDao {
         map.put("connectWallet", 2);
         map.put("loginGame", 2);
         map.put("buyBox", 1);
+        map.put("downloadGame", 0);
 
         int hashrate = 0;
         for (int i = 0; i < list.size(); i++) {
@@ -145,7 +146,7 @@ public class UserDao {
                 hashrate += map.get(list.get(i));
             }
         }
-        return hashrate;
+        return "算力" + hashrate;
     }
 
     public List findAllAddress() {
