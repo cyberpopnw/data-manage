@@ -14,11 +14,15 @@
             <result property="download" column="download" jdbcType="TINYINT"/>
             <result property="createTime" column="create_time" jdbcType="TIME"/>
             <result property="updateTime" column="update_time" jdbcType="TIME"/>
+            <result property="nikename" column="nikename" jdbcType="VARCHAR"/>
+            <result property="email" column="email" jdbcType="VARCHAR"/>
+            <result property="dobadge" column="dobadge" jdbcType="BIGINT"/>
+            <result property="personalrewards" column="personalrewards" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,inv_id,address,
-        level,fuji_coin,mubai_coin,
-        download,create_time,update_time
+        id,inv_id,address,personalrewards,
+        level,fuji_coin,mubai_coin,nikename,email,
+        download,create_time,update_time,dobadge
     </sql>
 </mapper>

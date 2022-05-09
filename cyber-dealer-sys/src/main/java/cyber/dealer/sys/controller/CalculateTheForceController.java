@@ -1,16 +1,20 @@
 package cyber.dealer.sys.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import cyber.dealer.sys.domain.CyberDealersSystem;
+import cyber.dealer.sys.domain.CyberUsers;
+import cyber.dealer.sys.domain.CyberUsersRecord;
 import cyber.dealer.sys.domain.vo.GeneralFormatVo;
+import cyber.dealer.sys.mapper.CyberDealersSystemMapper;
+import cyber.dealer.sys.mapper.CyberUsersMapper;
+import cyber.dealer.sys.mapper.CyberUsersRecordMapper;
 import cyber.dealer.sys.util.RedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.web3j.abi.datatypes.primitive.Int;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author lfy
@@ -29,18 +33,66 @@ public class CalculateTheForceController {
             add("durationGame");
         }
     };
+    private final static Map<String, Integer> map = new HashMap() {
+        {
+            put("connectWallet", 2);
+            put("loginGame", 1);
+            put("buyBox", 1);
+            put("durationGame", 1);
+            put("downloadGame", 2);
+        }
+    };
 
     @Autowired
     private RedisUtils redisUtils;
 
-    @RequestMapping("general")
+    @Autowired
+    private CyberUsersRecordMapper cyberUsersRecordMapper;
+
+    @Autowired
+    private CyberUsersMapper cyberUsersMapper;
+
+    @Autowired
+    private CyberDealersSystemMapper cyberDealersSystemMapper;
+
+    @PostMapping("general")
     public Object setGeneral(@RequestBody GeneralFormatVo generalFormatVo) {
+        generalFormatVo.setAddress(generalFormatVo.getAddress().toLowerCase());
         if (!list.contains(generalFormatVo.getAction())) {
             return false;
         }
         //过期时间代表一天
         redisUtils.set(generalFormatVo.getAction() + "-" + generalFormatVo.getAddress()
                 , JSONObject.toJSONString(generalFormatVo), 24 * 60 * 60);
-        return "";
+
+        CyberUsersRecord cyberUsersRecord = new CyberUsersRecord();
+        cyberUsersRecord.setAction(generalFormatVo.getAction());
+        cyberUsersRecord.setAddress(generalFormatVo.getAddress());
+        cyberUsersRecord.setTime(new Date());
+        cyberUsersRecord.setParameter1(generalFormatVo.getParameter1());
+        cyberUsersRecord.setParameter2(generalFormatVo.getParameter2());
+        cyberUsersRecord.setParameter3(generalFormatVo.getParameter3());
+        cyberUsersRecordMapper.insert(cyberUsersRecord);
+
+        return true;
     }
+
+    @GetMapping("calculateTotalForce")
+    public Object getCalculateTotalForce() {
+        Map<Object, Object> map1 = new HashMap();
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("systemKey", "CalculateTheReward");
+        CyberDealersSystem cyberDealersSystem = cyberDealersSystemMapper.selectOne(queryWrapper);
+        String systemval = cyberDealersSystem.getSystemval();
+        String calculate = redisUtils.get("总算力");
+        //奖励
+        map1.put("Calculate the reward", systemval);
+        //全部总算力
+        map1.put("calculate", calculate);
+        //当前全网 /s  奖励
+        map1.put("personal calculate", Double.valueOf(systemval) / 24 / 60 / 60 / Double.valueOf(calculate));
+        return map1;
+    }
+
+
 }

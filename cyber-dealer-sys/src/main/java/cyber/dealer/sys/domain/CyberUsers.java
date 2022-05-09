@@ -61,6 +61,15 @@ public class CyberUsers implements Serializable {
      */
     private Date updateTime;
 
+    private String email;
+
+    private String nikename;
+
+    private Long dobadge;
+
+    private String personalrewards;
+
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

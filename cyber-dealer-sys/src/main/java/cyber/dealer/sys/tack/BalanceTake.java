@@ -1,14 +1,20 @@
 package cyber.dealer.sys.tack;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import cyber.dealer.sys.domain.CyberUsers;
+import cyber.dealer.sys.mapper.CyberUsersMapper;
+import cyber.dealer.sys.mapper.CyberUsersRecordMapper;
 import cyber.dealer.sys.service.CyberUsersService;
 import cyber.dealer.sys.util.HttpURLConnectionUtil;
+import cyber.dealer.sys.util.RedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,10 +26,38 @@ import java.util.Map;
 @EnableScheduling
 public class BalanceTake {
 
+    private final static List list = new ArrayList<String>() {
+        {
+            add("connectWallet");
+            add("loginGame");
+            add("buyBox");
+            add("durationGame");
+        }
+    };
+    private final static Map<String, Integer> map = new HashMap() {
+        {
+            put("connectWallet", 2);
+            put("loginGame", 1);
+            put("buyBox", 1);
+            put("durationGame", 1);
+            put("downloadGame", 2);
+        }
+    };
+
+
+    @Autowired
+    private RedisUtils redisUtils;
+
+    @Autowired
+    private CyberUsersRecordMapper cyberUsersRecordMapper;
+
+    @Autowired
+    private CyberUsersMapper cyberUsersMapper;
+
     @Autowired
     private CyberUsersService userService;
 
-    @Scheduled(fixedRate = 1000 * 60 * 60, initialDelay = 1000)
+    //    @Scheduled(fixedRate = 1000 * 60 * 60, initialDelay = 1000)
     public void synchronousCoin() {
         List<CyberUsers> list = userService.lambdaQuery().list();
         System.out.println(list);
@@ -46,5 +80,21 @@ public class BalanceTake {
 
     }
 
+    @Scheduled(fixedRate = 1000 * 60)
+    public void getCalculateTotalForce() {
+        QueryWrapper<CyberUsers> queryWrapper = new QueryWrapper<CyberUsers>();
+        queryWrapper.select("address");
+        List<CyberUsers> list1 = cyberUsersMapper.selectList(queryWrapper);
+        int calculate = 0;
+        for (CyberUsers cyberUsers : list1) {
+            for (Object value : list) {
+                if (redisUtils.get(value + "-" + cyberUsers.getAddress()) != null) {
+                    int o = map.get(value);
+                    calculate += o;
+                }
+            }
+        }
+        redisUtils.set("总算力", calculate);
+    }
 
 }

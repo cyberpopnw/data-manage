@@ -1,7 +1,6 @@
 package cyber.dealer.sys.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
-import cyber.dealer.sys.domain.CyberTradingData;
 import cyber.dealer.sys.service.CyberTradingDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
