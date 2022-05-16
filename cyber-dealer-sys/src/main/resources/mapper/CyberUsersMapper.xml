@@ -17,11 +17,12 @@
             <result property="nikename" column="nikename" jdbcType="VARCHAR"/>
             <result property="email" column="email" jdbcType="VARCHAR"/>
             <result property="dobadge" column="dobadge" jdbcType="BIGINT"/>
+            <result property="playgametimes" column="playgametimes" jdbcType="BIGINT"/>
             <result property="personalrewards" column="personalrewards" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,inv_id,address,personalrewards,
+        id,inv_id,address,personalrewards,playgametimes,
         level,fuji_coin,mubai_coin,nikename,email,
         download,create_time,update_time,dobadge
     </sql>

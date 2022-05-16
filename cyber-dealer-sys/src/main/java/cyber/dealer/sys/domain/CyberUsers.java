@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 /**
@@ -14,6 +16,7 @@ import lombok.Data;
  */
 @TableName(value ="cyber_users")
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CyberUsers implements Serializable {
     /**
      * 主键|邀请人id
@@ -68,6 +71,8 @@ public class CyberUsers implements Serializable {
     private Long dobadge;
 
     private String personalrewards;
+
+    private Long playgametimes;
 
 
     @TableField(exist = false)

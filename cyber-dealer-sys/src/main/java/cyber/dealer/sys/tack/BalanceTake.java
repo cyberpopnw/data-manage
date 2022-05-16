@@ -1,8 +1,12 @@
 package cyber.dealer.sys.tack;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import cyber.dealer.sys.domain.CyberDealersSystem;
 import cyber.dealer.sys.domain.CyberUsers;
+import cyber.dealer.sys.domain.vo.GeneralFormatVo;
+import cyber.dealer.sys.mapper.CyberDealersSystemMapper;
 import cyber.dealer.sys.mapper.CyberUsersMapper;
 import cyber.dealer.sys.mapper.CyberUsersRecordMapper;
 import cyber.dealer.sys.service.CyberUsersService;
@@ -52,6 +56,9 @@ public class BalanceTake {
     private CyberUsersRecordMapper cyberUsersRecordMapper;
 
     @Autowired
+    private CyberDealersSystemMapper cyberDealersSystemMapper;
+
+    @Autowired
     private CyberUsersMapper cyberUsersMapper;
 
     @Autowired
@@ -97,4 +104,52 @@ public class BalanceTake {
         redisUtils.set("总算力", calculate);
     }
 
+    @Scheduled(fixedRate = 1000 * 60)
+    public void setCalculateTotalForce() {
+        QueryWrapper<CyberUsers> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("address");
+        List<CyberUsers> list1 = cyberUsersMapper.selectList(queryWrapper);
+        queryWrapper.clear();
+
+        QueryWrapper<CyberDealersSystem> queryWrappers = new QueryWrapper<>();
+        queryWrappers.eq("systemKey", "CalculateTheReward");
+        CyberDealersSystem cyberDealersSystem = cyberDealersSystemMapper.selectOne(queryWrappers);
+        String systemval = cyberDealersSystem.getSystemval();
+        double calculates = Double.parseDouble(systemval);
+
+        for (CyberUsers cyberUsers : list1) {
+            for (Object value : list) {
+                String s = redisUtils.get(value + "-" + cyberUsers.getAddress());
+                if (s != null) {
+                    if (redisUtils.get("总算力") == null) {
+                        return;
+                    }
+                    GeneralFormatVo generalFormatVo = JSONObject.parseObject(s, GeneralFormatVo.class);
+                    String address = generalFormatVo.getAddress();
+
+                    double calculate = Double.parseDouble(redisUtils.get("总算力"));
+                    if (calculate == 0) {
+                        return;
+                    }
+                    double v = calculates / 24 / 60 / calculate;
+
+                    queryWrapper.eq("address", address);
+                    CyberUsers cyberUsers1 = cyberUsersMapper.selectOne(queryWrapper);
+                    if (cyberUsers1 == null) {
+                        return;
+                    }
+                    queryWrapper.clear();
+
+                    CyberUsers cy = new CyberUsers();
+                    double v1 = Double.parseDouble(cyberUsers1.getPersonalrewards()) + v;
+                    String s1 = String.valueOf(v1);
+                    cy.setPersonalrewards(s1);
+
+                    queryWrapper.eq("address", address);
+                    cyberUsersMapper.update(cy, queryWrapper);
+                    queryWrapper.clear();
+                }
+            }
+        }
+    }
 }

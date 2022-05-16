@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.web3j.crypto.Keys;
 
 import static cyber.dealer.sys.util.Common.decorateReturnObject;
 
@@ -25,6 +26,7 @@ public class TradingDataController {
     @SaCheckLogin
     @GetMapping("getdata")
     public Object getData(String address){
+        address = Keys.toChecksumAddress(address);
         return decorateReturnObject(cyberTradingDataService.getData(address));
     }
 

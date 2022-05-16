@@ -11,7 +11,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface CyberUsersService extends IService<CyberUsers> {
 
-    ReturnObject<Object> inviter(String addr);
 
     ReturnObject<Object> invitation(String addr, String icode,String email, String nickname);
 
@@ -23,4 +22,5 @@ public interface CyberUsersService extends IService<CyberUsers> {
 
     ReturnObject<Object> findAll(String address);
 
+    Object setNikename(String nikename, String address);
 }

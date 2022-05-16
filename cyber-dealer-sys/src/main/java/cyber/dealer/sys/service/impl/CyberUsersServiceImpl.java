@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import cyber.dealer.sys.constant.ReturnObject;
 import cyber.dealer.sys.domain.CyberAgency;
@@ -22,6 +23,7 @@ import cyber.dealer.sys.util.RedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.web3j.crypto.Keys;
 import org.web3j.crypto.WalletUtils;
 
 import java.util.*;
@@ -45,6 +47,8 @@ public class CyberUsersServiceImpl extends ServiceImpl<CyberUsersMapper, CyberUs
             add("connectWallet");
             add("loginGame");
             add("buyBox");
+            add("durationGame");
+            add("downloadGame");
         }
     };
 
@@ -59,45 +63,6 @@ public class CyberUsersServiceImpl extends ServiceImpl<CyberUsersMapper, CyberUs
 
     @Autowired
     private RedisUtils redisUtils;
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public ReturnObject<Object> inviter(String addr) {
-
-//        if (!WalletUtils.isValidAddress(addr)) {
-//            // 不合法直接返回错误
-//            ExceptionCast.cast(AUTH_INVALID_ADDR);
-//        }
-        QueryWrapper<CyberUsers> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("address", addr);
-        CyberUsers cyberUsers1 = cyberUsersMapper.selectOne(queryWrapper);
-        if (cyberUsers1 != null) {
-            if (cyberUsers1.getAddress().compareToIgnoreCase(addr) == 0) {
-                ExceptionCast.cast(AUTH_INVALID_ADDRS);
-            }
-        }
-
-
-        CyberUsers cyberUsers = new CyberUsers();
-        cyberUsers.setAddress(addr);
-        cyberUsers.setLevel(1);
-        cyberUsersMapper.insert(cyberUsers);
-        CyberAgency cyberAgency = new CyberAgency();
-        cyberAgency.setAddress(addr);
-        cyberAgency.setUid(cyberUsers.getId());
-        //1级用户有4个邀请码
-        //1 邀请全球代理
-        //2 邀请区域代理
-        //3 邀请用户
-        String inv1 = getRandomString(8);
-        String inv2 = getRandomString(7);
-        String inv3 = getRandomString(6);
-        cyberAgency.setOneClass(inv1);
-        cyberAgency.setTwoClass(inv2);
-        cyberAgency.setThreeClass(inv3);
-        cyberAgencyMapper.insert(cyberAgency);
-        return new ReturnObject<Object>(cyberAgency);
-    }
 
     @Override
     public ReturnObject<Object> invitation(String addr, String icode, String email, String nickname) {
@@ -181,7 +146,7 @@ public class CyberUsersServiceImpl extends ServiceImpl<CyberUsersMapper, CyberUs
 //            // 不合法直接返回错误
 //            ExceptionCast.cast(AUTH_INVALID_ADDR);
 //        }
-
+        addr = Keys.toChecksumAddress(addr);
         QueryWrapper<CyberUsers> CyberUsersQ = new QueryWrapper<>();
         CyberUsersQ.eq("address", addr);
         CyberUsers cyberUsers = cyberUsersMapper.selectOne(CyberUsersQ);
@@ -218,6 +183,7 @@ public class CyberUsersServiceImpl extends ServiceImpl<CyberUsersMapper, CyberUs
                     }
                 }
             }
+            convert.putIfAbsent("remarks", "cyber_user");
             convert.putAll(setRedisTo(cyberUserss.getAddress()));
             if (cyberUserss.getLevel() == 4) {
                 list2.add(convert);
@@ -225,7 +191,7 @@ public class CyberUsersServiceImpl extends ServiceImpl<CyberUsersMapper, CyberUs
                 list3.add(convert);
             } else if (cyberUserss.getLevel() == 2) {
                 list4.add(convert);
-            }else if (cyberUserss.getLevel() == 1) {
+            } else if (cyberUserss.getLevel() == 1) {
                 list1.add(convert);
             }
         }
@@ -288,7 +254,7 @@ public class CyberUsersServiceImpl extends ServiceImpl<CyberUsersMapper, CyberUs
         }
 
 //        DetermineThereisBadge(cyberUsers1.getLevel(), addr);
-        StpUtil.login(cyberUsers1.getId());
+//        StpUtil.login(cyberUsers1.getId());
         Map map = new HashMap();
         List list1 = new ArrayList();
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
@@ -350,13 +316,26 @@ public class CyberUsersServiceImpl extends ServiceImpl<CyberUsersMapper, CyberUs
         return null;
     }
 
+    @Override
+    public Object setNikename(String nikename, String address) {
+        LambdaUpdateWrapper<CyberUsers> queryWrapper = new LambdaUpdateWrapper<>();
+        queryWrapper
+                .eq(CyberUsers::getAddress, address)
+                .set(CyberUsers::getNikename, nikename)
+        ;
+        CyberUsers cyberUsers = new CyberUsers();
+        cyberUsers.setNikename(nikename);
+        return cyberUsersMapper.update(cyberUsers, queryWrapper) == 1;
+    }
+
 
     public Object get(String address) {
         Map<String, Integer> map = new HashMap<>();
         map.put("connectWallet", 2);
-        map.put("loginGame", 2);
+        map.put("loginGame", 1);
         map.put("buyBox", 1);
-        map.put("downloadGame", 0);
+        map.put("durationGame", 1);
+        map.put("downloadGame", 2);
 
         int hashrate = 0;
         for (int i = 0; i < list.size(); i++) {

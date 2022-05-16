@@ -23,7 +23,6 @@ public class Swagger3Config {
 
     //http://localhost:9032/swagger-ui/index.html
 
-
     @Bean
     public Docket createRestApi() {
         return new Docket(DocumentationType.OAS_30)

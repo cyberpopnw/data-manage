@@ -9,10 +9,8 @@ import cyber.dealer.sys.exception.ExceptionCast;
 import cyber.dealer.sys.mapper.CyberUsersMapper;
 import cyber.dealer.sys.mapper.CyberUsersRemarksMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.web3j.crypto.Keys;
 
 import javax.management.Query;
 
@@ -33,14 +31,12 @@ import static cyber.dealer.sys.util.Common.decorateReturnObject;
 public class remarksController {
 
     @Autowired
-    private CyberUsersMapper cyberUsersMapper;
-
-    @Autowired
     private CyberUsersRemarksMapper cyberUsersRemarksMapper;
 
 
-    @GetMapping("setremarks")
+    @PutMapping("setremarks")
     public Object setRemarks(String address, String toaddress, String remarks) {
+
         if (address == null) {
             ExceptionCast.cast(FIELD_NOTVALID);
         }
@@ -50,6 +46,8 @@ public class remarksController {
         if (toaddress == null) {
             ExceptionCast.cast(FIELD_NOTVALID);
         }
+        address = Keys.toChecksumAddress(address);
+        toaddress = Keys.toChecksumAddress(toaddress);
 
         CyberUsersRemarks cyberUsersRemarks = new CyberUsersRemarks();
         cyberUsersRemarks.setRemarks(remarks);
@@ -63,14 +61,12 @@ public class remarksController {
         queryWrapper.allEq(map);
         CyberUsersRemarks cyberUsersRemarks1 = cyberUsersRemarksMapper.selectOne(queryWrapper);
         if (cyberUsersRemarks1 == null) {
-            int insert = cyberUsersRemarksMapper.insert(cyberUsersRemarks);
-            return decorateReturnObject(new ReturnObject<>(insert == 0 ? false : true));
+            return decorateReturnObject(new ReturnObject<>(cyberUsersRemarksMapper.insert(cyberUsersRemarks) == 1));
         }
         UpdateWrapper<CyberUsersRemarks> remarksR = new UpdateWrapper<>();
         remarksR.eq("address", address);
         remarksR.eq("toaddress", toaddress);
         remarksR.set("remarks", remarks);
-        int update = cyberUsersRemarksMapper.update(cyberUsersRemarks, remarksR);
-        return decorateReturnObject(new ReturnObject<>(update == 0 ? false : true));
+        return decorateReturnObject(new ReturnObject<>(cyberUsersRemarksMapper.update(cyberUsersRemarks, remarksR) == 1));
     }
 }

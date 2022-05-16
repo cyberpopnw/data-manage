@@ -10,4 +10,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface CyberDealersSystemService extends IService<CyberDealersSystem> {
 
+    Object setReward(Integer reward);
+
+    Object getcommission(Integer level);
+
+    Object setcommission(Integer level, Double commission);
 }
