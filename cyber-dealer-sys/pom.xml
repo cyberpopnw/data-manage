@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cyber-dealer-sys</groupId>
     <artifactId>cyber-dealer-sys</artifactId>
-    <version>0.0.4-SNAPSHOT</version>
+    <version>0.0.7-SNAPSHOT</version>
     <name>cyber-dealer-sys</name>
     <description>Demo project for Spring Boot</description>
 

@@ -22,18 +22,33 @@ import java.util.List;
  * @author lfy
  * @Date 2022/4/25 11:06
  */
-//@Configuration
+@Configuration
 public class MySaTokenConfig implements WebMvcConfigurer {
     // 注册sa-token的登录拦截器
-//    @Override
-//    public void addInterceptors(InterceptorRegistry registry) {
-//        // 注册登录拦截器，并排除登录接口地址
-//        registry.addInterceptor(new SaRouteInterceptor())
-//                .addPathPatterns("/**")
-//                .excludePathPatterns("/user/doLogin")
-//                .excludePathPatterns("/user/bemail")
-//                .excludePathPatterns("/user/baddress")
-//                .excludePathPatterns("/level/invitation")
-//        ;
-//    }
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        // 注册登录拦截器，并排除登录接口地址
+        registry.addInterceptor(new SaRouteInterceptor())
+                .addPathPatterns("/**")
+                .excludePathPatterns("/user/doLogin"
+                        , "/user/bemail"
+                        , "/user/baddress"
+                        , "/level/invitation"
+                        , "/business/nationallevel"
+                        , "/business/deluserlevel"
+                        , "/business/arealevel"
+                        , "/business/partnerlevel"
+                        , "/business/userlevel"
+                        , "/connection/general"
+                        , "/re/setremarks"
+                        , "/user/outLogin"
+                        , "/user/download"
+                        , "/user/isLogin"
+                        , "/business/invuser"
+                        , "/user/getuser"
+                        , "/separate/dologin"
+                        ,"/level/eqaddr"
+                )
+        ;
+    }
 }

@@ -1,6 +1,5 @@
 package cyber.dealer.sys.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import cyber.dealer.sys.mapper.CyberUsersRecordMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;

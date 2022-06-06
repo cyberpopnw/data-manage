@@ -8,6 +8,7 @@ import cyber.dealer.sys.domain.CyberAgency;
 import cyber.dealer.sys.domain.CyberUsers;
 import cyber.dealer.sys.mapper.CyberAgencyMapper;
 import cyber.dealer.sys.mapper.CyberUsersMapper;
+import cyber.dealer.sys.util.ObjectToMapUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.web3j.crypto.Keys;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,10 +52,46 @@ public class BCFindAllController {
         if (cyberAgency == null) {
             return decorateReturnObject(new ReturnObject<>(false));
         }
-        QueryWrapper queryWrapper2 = new QueryWrapper();
+        QueryWrapper<CyberUsers> queryWrapper2 = new QueryWrapper<>();
         queryWrapper2.eq("inv_id", cyberAgency.getId());
         queryWrapper2.orderByDesc("level");
-        List list = cyberUsersMapper.selectList(queryWrapper2);
+        List<CyberUsers> list1 = cyberUsersMapper.selectList(queryWrapper2);
+
+        List list = new ArrayList();
+
+        if (!list1.isEmpty()) {
+            for (CyberUsers cyberUserss : list1) {
+                int level1 = 0;
+                int level2 = 0;
+                int level3 = 0;
+                if (cyberUserss.getLevel() != 1) {
+                    QueryWrapper<CyberAgency> queryWrapper4 = new QueryWrapper<>();
+                    queryWrapper4.eq("uid", cyberUserss.getId());
+                    CyberAgency cyberAgency4 = cyberAgencyMapper.selectOne(queryWrapper4);
+
+                    QueryWrapper<CyberUsers> queryWrapper5 = new QueryWrapper<>();
+                    queryWrapper5.eq("inv_id", cyberAgency4.getId());
+                    List<CyberUsers> cyberUsers1 = cyberUsersMapper.selectList(queryWrapper5);
+                    for (CyberUsers cyberUsersss : cyberUsers1) {
+                        if (cyberUsersss.getLevel() == 1) {
+                            level1 += 1;
+                        }
+                        if (cyberUsersss.getLevel() == 2) {
+                            level2 += 1;
+                        }
+                        if (cyberUsersss.getLevel() == 3) {
+                            level3 += 1;
+                        }
+                    }
+                }
+
+                Map convert = ObjectToMapUtil.convert(cyberUserss);
+                convert.put("countlevel1", level1);
+                convert.put("countlevel2", level2);
+                convert.put("countlevel3", level3);
+                list.add(convert);
+            }
+        }
         return decorateReturnObject(new ReturnObject<>(list));
     }
 
@@ -62,19 +100,58 @@ public class BCFindAllController {
         QueryWrapper<CyberUsers> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("level", level);
         queryWrapper.eq("inv_id", 0);
+        queryWrapper.orderByDesc("create_time");
         IPage<CyberUsers> pages = new Page<>(page, pageSize);
         IPage<CyberUsers> cyberUsersIPage = cyberUsersMapper.selectPage(pages, queryWrapper);
-        List cyberUserss = cyberUsersIPage.getRecords();
+        List<CyberUsers> cyberUserss = cyberUsersIPage.getRecords();
+
         long pages1 = cyberUsersIPage.getPages();
         long total = cyberUsersIPage.getTotal();
         long current = cyberUsersIPage.getCurrent();
+
+        List list = new ArrayList();
+
+
         if (!cyberUserss.isEmpty()) {
+            for (CyberUsers cyberUsers : cyberUserss) {
+                int level1 = 0;
+                int level2 = 0;
+                int level3 = 0;
+                if (cyberUsers.getLevel() != 1) {
+                    QueryWrapper<CyberAgency> queryWrapper1 = new QueryWrapper<>();
+                    queryWrapper1.eq("uid", cyberUsers.getId());
+                    CyberAgency cyberAgency = cyberAgencyMapper.selectOne(queryWrapper1);
+
+                    QueryWrapper<CyberUsers> queryWrapper2 = new QueryWrapper<>();
+                    queryWrapper2.eq("inv_id", cyberAgency.getId());
+                    List<CyberUsers> cyberUsers1 = cyberUsersMapper.selectList(queryWrapper2);
+                    for (CyberUsers cyberUsersss : cyberUsers1) {
+                        if (cyberUsersss.getLevel() == 1) {
+                            level1 += 1;
+                        }
+                        if (cyberUsersss.getLevel() == 2) {
+                            level2 += 1;
+                        }
+                        if (cyberUsersss.getLevel() == 3) {
+                            level3 += 1;
+                        }
+                    }
+                }
+
+                Map convert = ObjectToMapUtil.convert(cyberUsers);
+                convert.put("countlevel1", level1);
+                convert.put("countlevel2", level2);
+                convert.put("countlevel3", level3);
+                list.add(convert);
+            }
+
             Map<String, Object> map = new HashMap<>();
             map.put("pages", pages1);
             map.put("total", total);
             map.put("current", current);
-            cyberUserss.add(map);
-            return decorateReturnObject(new ReturnObject<>(cyberUserss));
+
+            list.add(map);
+            return decorateReturnObject(new ReturnObject<>(list));
         }
         return decorateReturnObject(new ReturnObject<>(false));
     }

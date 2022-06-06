@@ -1,6 +1,5 @@
 package cyber.dealer.sys.controller;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.stp.StpUtil;
 import cyber.dealer.sys.constant.ReturnObject;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,13 +17,11 @@ import static cyber.dealer.sys.util.Common.decorateReturnObject;
 @CrossOrigin
 public class PermissionsController {
 
-//    @SaCheckPermission("super-admin")
     @GetMapping("getPer")
     public Object getPermis(){
         return decorateReturnObject(new ReturnObject<>(StpUtil.hasPermission("user-update")));
     }
 
-//    @SaCheckPermission("admin")
     @GetMapping("getPers")
     public Object getPermiss(){
         return decorateReturnObject(new ReturnObject<>(StpUtil.hasPermission("user-update")));

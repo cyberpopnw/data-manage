@@ -23,4 +23,6 @@ public interface CyberUsersService extends IService<CyberUsers> {
     ReturnObject<Object> findAll(String address);
 
     Object setNikename(String nikename, String address);
+
+    Object getuser(CyberUsers one);
 }

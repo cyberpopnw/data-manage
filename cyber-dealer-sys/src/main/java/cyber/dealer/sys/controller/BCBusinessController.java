@@ -3,7 +3,6 @@ package cyber.dealer.sys.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import cyber.dealer.sys.constant.ReturnObject;
 import cyber.dealer.sys.domain.CyberAgency;
 import cyber.dealer.sys.domain.CyberUsers;
@@ -38,22 +37,36 @@ public class BCBusinessController {
     private CyberAgencyMapper cyberAgencyMapper;
 
 
+    @DeleteMapping("deluserlevel")
+    public Object deluserlevel(String address) {
+        QueryWrapper<CyberUsers> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("address", address);
+        queryWrapper.eq("level", 1);
+        return decorateReturnObject(new ReturnObject<>(cyberUsersMapper.delete(queryWrapper) == 1));
+    }
+
     //注册国家级的  level ==4
     @PostMapping("nationallevel")
     public Object setNationallevel(String address,
                                    String nickname,
                                    String email,
                                    Integer level) {
+
         address = Keys.toChecksumAddress(address);
         if (level != 4) {
             ExceptionCast.cast(AUTH_INVALID_EQLEVEL);
         }
 
-        System.out.println(address);
-
         QueryWrapper<CyberUsers> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("address", address);
         CyberUsers cyberUsers1 = cyberUsersMapper.selectOne(queryWrapper);
+
+        QueryWrapper<CyberUsers> queryWrappe = new QueryWrapper<>();
+        queryWrappe.eq("email", email);
+        CyberUsers cyberUser = cyberUsersMapper.selectOne(queryWrappe);
+        if (cyberUser != null) {
+            ExceptionCast.cast(AUTH_INVALID_EQEMAIL);
+        }
 
         if (cyberUsers1 != null) {
             ExceptionCast.cast(AUTH_INVALID_ADDRS);
@@ -93,6 +106,7 @@ public class BCBusinessController {
                           String email,
                           Integer level) {
         address = Keys.toChecksumAddress(address);
+
         if (level != 3) {
             ExceptionCast.cast(AUTH_INVALID_EQLEVEL);
         }
@@ -100,6 +114,13 @@ public class BCBusinessController {
         QueryWrapper<CyberUsers> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("address", address);
         CyberUsers cyberUsers1 = cyberUsersMapper.selectOne(queryWrapper);
+
+        QueryWrapper<CyberUsers> queryWrappe = new QueryWrapper<>();
+        queryWrappe.eq("email", email);
+        CyberUsers cyberUser = cyberUsersMapper.selectOne(queryWrappe);
+        if (cyberUser != null) {
+            ExceptionCast.cast(AUTH_INVALID_EQEMAIL);
+        }
 
         if (cyberUsers1 != null) {
             ExceptionCast.cast(AUTH_INVALID_ADDRS);
@@ -145,6 +166,13 @@ public class BCBusinessController {
         QueryWrapper<CyberUsers> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("address", address);
         CyberUsers cyberUsers1 = cyberUsersMapper.selectOne(queryWrapper);
+
+        QueryWrapper<CyberUsers> queryWrappe = new QueryWrapper<>();
+        queryWrappe.eq("email", email);
+        CyberUsers cyberUser = cyberUsersMapper.selectOne(queryWrappe);
+        if (cyberUser != null) {
+            ExceptionCast.cast(AUTH_INVALID_EQEMAIL);
+        }
 
         if (cyberUsers1 != null) {
             ExceptionCast.cast(AUTH_INVALID_ADDRS);
@@ -296,7 +324,7 @@ public class BCBusinessController {
             queryWrapper.eq(CyberUsers::getAddress, address);
             CyberUsers cyberUsers2 = cyberUsersMapper.selectOne(queryWrapper);
 
-            if ( cyberUsers2 != null) {
+            if (cyberUsers2 != null) {
                 ExceptionCast.cast(AUTH_INVALID_EQADMINEX);
             }
         }
@@ -343,7 +371,8 @@ public class BCBusinessController {
             if (level == 2) {
                 cyberAgency.setThreeClass(inv3);
             } else {
-                cyberAgency.setThreeClass(inv2);
+                cyberAgency.setTwoClass(inv2);
+                cyberAgency.setThreeClass(inv3);
             }
             cyberAgency.setCreateTime(new Date());
             cyberAgency.setUpdateTime(new Date());
@@ -352,7 +381,6 @@ public class BCBusinessController {
         }
 
         return decorateReturnObject(new ReturnObject<>(cyberUsers));
-//        return decorateReturnObject(cyberUsersService.inviter(addr.toLowerCase()));
     }
 
 

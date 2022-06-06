@@ -141,14 +141,14 @@ public class CyberUsersServiceImpl extends ServiceImpl<CyberUsersMapper, CyberUs
 //    }
 
     @Override
-    public ReturnObject<Object> getData(String addr) {
+    public ReturnObject<Object> getData(String email) {
 //        if (!WalletUtils.isValidAddress(addr)) {
 //            // 不合法直接返回错误
 //            ExceptionCast.cast(AUTH_INVALID_ADDR);
 //        }
-        addr = Keys.toChecksumAddress(addr);
+//        addr = Keys.toChecksumAddress(addr);
         QueryWrapper<CyberUsers> CyberUsersQ = new QueryWrapper<>();
-        CyberUsersQ.eq("address", addr);
+        CyberUsersQ.eq("email", email);
         CyberUsers cyberUsers = cyberUsersMapper.selectOne(CyberUsersQ);
         if (cyberUsers == null) {
             ExceptionCast.cast(AUTH_INVALID_EQOBJ);
@@ -176,8 +176,8 @@ public class CyberUsersServiceImpl extends ServiceImpl<CyberUsersMapper, CyberUs
             Map<String, String> convert = ObjectToMapUtil.convert(cyberUserss);
             //备注赋予
             for (CyberUsersRemarks cyberUsersRemarks1 : cyberUsersRemarks) {
-                if (cyberUsersRemarks1.getAddress().equals(addr)) {
-                    if (convert.get("address").equals(cyberUsersRemarks1.getToaddress())) {
+                if (cyberUsersRemarks1.getAddress().equals(email)) {
+                    if (convert.get("email").equals(cyberUsersRemarks1.getToaddress())) {
                         convert.put("remarks", cyberUsersRemarks1.getRemarks());
                         break;
                     }
@@ -227,7 +227,11 @@ public class CyberUsersServiceImpl extends ServiceImpl<CyberUsersMapper, CyberUs
         map.put("hashrate", hashrate);
         long expire = redisUtils.getExpire("connectWallet-" + address);
         long onlineTime = 24 * 60 * 60 - expire;
+        long expire1 = redisUtils.getExpire("loginGame-" + address);
+        long gameTime = 24 * 60 * 60 - expire1;
+
         map.put("onlineTime", onlineTime);
+        map.put("gameTime", gameTime);
         return map;
     }
 
@@ -238,7 +242,7 @@ public class CyberUsersServiceImpl extends ServiceImpl<CyberUsersMapper, CyberUs
 //            // 不合法直接返回错误
 //            ExceptionCast.cast(AUTH_INVALID_ADDR);
 //        }
-
+        addr = Keys.toChecksumAddress(addr);
         QueryWrapper<CyberUsers> cyberUsers = new QueryWrapper<>();
         cyberUsers.eq("address", addr);
         CyberUsers cyberUsers1 = cyberUsersMapper.selectOne(cyberUsers);
@@ -254,11 +258,12 @@ public class CyberUsersServiceImpl extends ServiceImpl<CyberUsersMapper, CyberUs
         }
 
 //        DetermineThereisBadge(cyberUsers1.getLevel(), addr);
-//        StpUtil.login(cyberUsers1.getId());
+        StpUtil.login(cyberUsers1.getId());
         Map map = new HashMap();
         List list1 = new ArrayList();
-        SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
-        map.put(tokenInfo.getTokenName(), tokenInfo.getTokenValue());
+//        SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
+//        map.put(tokenInfo.getTokenName(), tokenInfo.getTokenValue());
+        System.out.println(cyberUsers1);
         Map<String, String> convert = ObjectToMapUtil.convert(cyberUsers1);
         System.out.println(convert);
         map.putAll(convert);
@@ -317,15 +322,23 @@ public class CyberUsersServiceImpl extends ServiceImpl<CyberUsersMapper, CyberUs
     }
 
     @Override
-    public Object setNikename(String nikename, String address) {
+    public Object setNikename(String nikename, String email) {
         LambdaUpdateWrapper<CyberUsers> queryWrapper = new LambdaUpdateWrapper<>();
         queryWrapper
-                .eq(CyberUsers::getAddress, address)
+                .eq(CyberUsers::getEmail, email)
                 .set(CyberUsers::getNikename, nikename)
         ;
         CyberUsers cyberUsers = new CyberUsers();
         cyberUsers.setNikename(nikename);
         return cyberUsersMapper.update(cyberUsers, queryWrapper) == 1;
+    }
+
+    @Override
+    public Object getuser(CyberUsers one) {
+        Map map = setRedisTo(one.getAddress());
+        Map<String, String> convert = ObjectToMapUtil.convert(one);
+        convert.putAll(map);
+        return convert;
     }
 
 

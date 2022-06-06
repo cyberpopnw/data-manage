@@ -3,21 +3,15 @@ package cyber.dealer.sys.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import cyber.dealer.sys.constant.ReturnObject;
-import cyber.dealer.sys.domain.CyberUsers;
 import cyber.dealer.sys.domain.CyberUsersRemarks;
 import cyber.dealer.sys.exception.ExceptionCast;
-import cyber.dealer.sys.mapper.CyberUsersMapper;
 import cyber.dealer.sys.mapper.CyberUsersRemarksMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.web3j.crypto.Keys;
-
-import javax.management.Query;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static cyber.dealer.sys.constant.ReturnNo.AUTH_INVALID_EQADMINEX;
 import static cyber.dealer.sys.constant.ReturnNo.FIELD_NOTVALID;
 import static cyber.dealer.sys.util.Common.decorateReturnObject;
 
@@ -46,8 +40,8 @@ public class remarksController {
         if (toaddress == null) {
             ExceptionCast.cast(FIELD_NOTVALID);
         }
-        address = Keys.toChecksumAddress(address);
-        toaddress = Keys.toChecksumAddress(toaddress);
+//        address = Keys.toChecksumAddress(address);
+//        toaddress = Keys.toChecksumAddress(toaddress);
 
         CyberUsersRemarks cyberUsersRemarks = new CyberUsersRemarks();
         cyberUsersRemarks.setRemarks(remarks);

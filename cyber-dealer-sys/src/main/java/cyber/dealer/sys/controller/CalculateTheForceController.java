@@ -100,14 +100,20 @@ public class CalculateTheForceController {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("systemKey", "CalculateTheReward");
         CyberDealersSystem cyberDealersSystem = cyberDealersSystemMapper.selectOne(queryWrapper);
-        String systemval = cyberDealersSystem.getSystemval();
-        String calculate = redisUtils.get("总算力");
+        Double systemval = Double.valueOf(cyberDealersSystem.getSystemval());
+        Double calculate = Double.parseDouble(redisUtils.get("总算力"));
         //奖励
         map1.put("Calculate the reward", systemval);
         //全部总算力
         map1.put("calculate", calculate);
+        if (systemval == 0.0 || calculate == 0.0) {
+            map1.put("personal calculate", 0);
+            return map1;
+        }
+        System.out.println(systemval);
+        System.out.println(calculate);
         //当前全网 /s  奖励
-        map1.put("personal calculate", Double.valueOf(systemval) / 24 / 60 / 60 / Double.valueOf(calculate));
+        map1.put("personal calculate", systemval / 24 / 60 / 60 / calculate);
         return map1;
     }
 

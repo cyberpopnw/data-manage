@@ -37,7 +37,7 @@ public enum ReturnNo {
     AUTH_INVALID_BANNED(512, "账号已被封禁"),
     AUTH_INVALID_EQLEVEL(513, "level有问题"),
     AUTH_INVALID_EQEMAIL(514, "邮箱已被注册"),
-
+    AUTH_TRANSFER_ALLTRANSFER(515, "信息不对"),
 
     //以下错误码提示可以自行修改
     //--------------------------------------------
