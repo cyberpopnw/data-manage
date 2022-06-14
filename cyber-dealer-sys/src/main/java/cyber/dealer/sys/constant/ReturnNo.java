@@ -38,6 +38,10 @@ public enum ReturnNo {
     AUTH_INVALID_EQLEVEL(513, "level有问题"),
     AUTH_INVALID_EQEMAIL(514, "邮箱已被注册"),
     AUTH_TRANSFER_ALLTRANSFER(515, "信息不对"),
+    AUTH_EMAIL_PASSWORD_FAIL(516, "邮箱或者密码有错误"),
+    AUTH_ADDRESS_RECODE(517, "address有问题"),
+    AUTH_ADDRESS_P_RECODE(518, "已有address"),
+
 
     //以下错误码提示可以自行修改
     //--------------------------------------------

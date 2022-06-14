@@ -8,7 +8,12 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Builder;
 import lombok.Data;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 
 /**
  * 
@@ -63,7 +68,6 @@ public class CyberUsers implements Serializable {
      * 更新时间
      */
     private Date updateTime;
-
     private String email;
 
     private String nikename;
@@ -73,6 +77,7 @@ public class CyberUsers implements Serializable {
     private String personalrewards;
 
     private Long playgametimes;
+    private String password;
 
 
     @TableField(exist = false)

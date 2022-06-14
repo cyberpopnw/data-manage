@@ -16,11 +16,15 @@ import cyber.dealer.sys.exception.ExceptionCast;
 import cyber.dealer.sys.mapper.CyberAgencyMapper;
 import cyber.dealer.sys.service.CyberUsersService;
 import cyber.dealer.sys.util.ObjectToMapUtil;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.web3j.crypto.Keys;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import java.util.*;
 
 import static cyber.dealer.sys.constant.ReturnNo.*;
@@ -43,12 +47,10 @@ public class UserController {
     private CyberAgencyMapper cyberAgencyMapper;
 
     @SaCheckLogin
-//    @SaCheckPermission("user-get")
     @GetMapping("getdata")
     public Object getData(String email) {
         return decorateReturnObject(cyberUsersService.getData(email));
     }
-
 
     // 测试登录，浏览器访问： http://localhost:8081/user/doLogin?username=zhang&password=123456
     @GetMapping("doLogin")
@@ -56,16 +58,61 @@ public class UserController {
         return decorateReturnObject(cyberUsersService.eqAddress(address));
     }
 
+    //登录
+    @PostMapping("doLoginEmail")
+    public Object doLoginEmail(@NotBlank @Valid String email,  String password) {
+        return decorateReturnObject(cyberUsersService.doLoginEmail(email, password));
+    }
+
+    //修改密码
+    @PutMapping("updatePassword")
+    public Object updatePassword(String email, String lastps, String ps) {
+        boolean update = cyberUsersService.lambdaUpdate().eq(CyberUsers::getEmail, email).eq(CyberUsers::getPassword, lastps).set(CyberUsers::getPassword, ps).update();
+        if (update) {
+            CyberUsers one = cyberUsersService.lambdaQuery().eq(CyberUsers::getEmail, email).one();
+            StpUtil.logout(one.getId());
+        }
+        return decorateReturnObject(new ReturnObject<>(update));
+    }
+
+    //绑定address
+    @PostMapping("bindingAddress")
+    public Object bindingAddress(String email, String address) {
+        address = Keys.toChecksumAddress(address);
+        if (address.length() != 42) {
+            return decorateReturnObject(new ReturnObject<>(AUTH_ADDRESS_RECODE));
+        }
+        CyberUsers one = cyberUsersService.lambdaQuery().eq(CyberUsers::getEmail, email).one();
+        CyberUsers two = cyberUsersService.lambdaQuery().eq(CyberUsers::getAddress, address).one();
+
+        if (two != null) {
+            return decorateReturnObject(new ReturnObject<>(AUTH_ADDRESS_P_RECODE));
+        }
+
+        if (!"".equals(one.getAddress()) || one.getEmail() == null) {
+            return decorateReturnObject(new ReturnObject<>(AUTH_ADDRESS_P_RECODE));
+        }
+        return decorateReturnObject(new ReturnObject<>(cyberUsersService.lambdaUpdate().eq(CyberUsers::getEmail, email).set(CyberUsers::getAddress, address).update()));
+    }
+
+
     @SaCheckLogin
     @GetMapping("outLogin")
     public Object outLogin(String address) {
+
         return decorateReturnObject(cyberUsersService.outAddress(address));
     }
 
     //下载埋点
     @GetMapping("download")
     public Object download(String address) {
-        return decorateReturnObject(new ReturnObject<>(cyberUsersService.lambdaUpdate().set(CyberUsers::getDownload, true).eq(CyberUsers::getAddress, address).update()));
+        address = Keys.toChecksumAddress(address);
+        return decorateReturnObject(new ReturnObject<>(cyberUsersService.lambdaUpdate().set(CyberUsers::getDownload, 1).eq(CyberUsers::getAddress, address).update()));
+    }
+
+    @GetMapping("downloademail")
+    public Object downloademail(String email) {
+        return decorateReturnObject(new ReturnObject<>(cyberUsersService.lambdaUpdate().set(CyberUsers::getDownload, 1).eq(CyberUsers::getEmail, email).update()));
     }
 
 

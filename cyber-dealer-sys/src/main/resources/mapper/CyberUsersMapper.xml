@@ -19,6 +19,7 @@
             <result property="dobadge" column="dobadge" jdbcType="BIGINT"/>
             <result property="playgametimes" column="playgametimes" jdbcType="BIGINT"/>
             <result property="personalrewards" column="personalrewards" jdbcType="VARCHAR"/>
+            <result property="password" column="password" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">

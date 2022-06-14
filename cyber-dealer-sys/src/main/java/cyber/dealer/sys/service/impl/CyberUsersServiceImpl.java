@@ -1,9 +1,6 @@
 package cyber.dealer.sys.service.impl;
 
-import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -17,9 +14,9 @@ import cyber.dealer.sys.mapper.CyberAgencyMapper;
 import cyber.dealer.sys.mapper.CyberUsersRemarksMapper;
 import cyber.dealer.sys.service.CyberUsersService;
 import cyber.dealer.sys.mapper.CyberUsersMapper;
-import cyber.dealer.sys.util.HttpURLConnectionUtil;
 import cyber.dealer.sys.util.ObjectToMapUtil;
 import cyber.dealer.sys.util.RedisUtils;
+import io.reactivex.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -263,9 +260,7 @@ public class CyberUsersServiceImpl extends ServiceImpl<CyberUsersMapper, CyberUs
         List list1 = new ArrayList();
 //        SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
 //        map.put(tokenInfo.getTokenName(), tokenInfo.getTokenValue());
-        System.out.println(cyberUsers1);
         Map<String, String> convert = ObjectToMapUtil.convert(cyberUsers1);
-        System.out.println(convert);
         map.putAll(convert);
         list1.add(map);
         list1.add(true);
@@ -339,6 +334,33 @@ public class CyberUsersServiceImpl extends ServiceImpl<CyberUsersMapper, CyberUs
         Map<String, String> convert = ObjectToMapUtil.convert(one);
         convert.putAll(map);
         return convert;
+    }
+
+    @Override
+    public ReturnObject<Object> doLoginEmail(@NonNull String email, @NonNull String password) {
+        LambdaQueryWrapper<CyberUsers> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(CyberUsers::getEmail, email);
+        queryWrapper.eq(CyberUsers::getPassword, password);
+        CyberUsers cyberUsers = cyberUsersMapper.selectOne(queryWrapper);
+
+        if (cyberUsers.getEmail() == null) {
+            return new ReturnObject<>(AUTH_EMAIL_PASSWORD_FAIL);
+        }
+
+        if (cyberUsers.getLevel() == 1) {
+            return new ReturnObject<>(AUTH_INVALID_EQLEVEL);
+        }
+
+        if (cyberUsers.getAddress() != null) {
+            StpUtil.login(cyberUsers.getId());
+        }
+        Map map = new HashMap();
+        List list1 = new ArrayList();
+        Map<String, String> convert = ObjectToMapUtil.convert(cyberUsers);
+        map.putAll(convert);
+        list1.add(map);
+        list1.add(true);
+        return new ReturnObject<>(list1);
     }
 
 

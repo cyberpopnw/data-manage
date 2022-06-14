@@ -48,6 +48,7 @@ public class MySaTokenConfig implements WebMvcConfigurer {
                         , "/user/getuser"
                         , "/separate/dologin"
                         ,"/level/eqaddr"
+                        ,"/user/doLoginEmail"
                 )
         ;
     }

@@ -25,4 +25,7 @@ public interface CyberUsersService extends IService<CyberUsers> {
     Object setNikename(String nikename, String address);
 
     Object getuser(CyberUsers one);
+
+    ReturnObject<Object> doLoginEmail(String email, String password);
+
 }
