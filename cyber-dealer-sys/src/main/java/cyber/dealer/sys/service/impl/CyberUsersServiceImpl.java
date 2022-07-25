@@ -180,6 +180,34 @@ public class CyberUsersServiceImpl extends ServiceImpl<CyberUsersMapper, CyberUs
                     }
                 }
             }
+            System.out.println(cyberUserss.getId());
+            QueryWrapper<CyberAgency> cyq = new QueryWrapper<>();
+            cyq.eq("uid", cyberUserss.getId());
+            CyberAgency ca = cyberAgencyMapper.selectOne(cyq);
+            int level1 = 0;
+            int level2 = 0;
+            int level3 = 0;
+            if (ca != null) {
+                QueryWrapper<CyberUsers> cyuq = new QueryWrapper<>();
+                cyuq.eq("inv_id", ca.getId());
+                List<CyberUsers> cyberUsers2 = cyberUsersMapper.selectList(cyuq);
+                for (CyberUsers cyberUsersss : cyberUsers2) {
+                    if (cyberUsersss.getLevel() == 1) {
+                        level1 += 1;
+                    }
+                    if (cyberUsersss.getLevel() == 2) {
+                        level2 += 1;
+                    }
+                    if (cyberUsersss.getLevel() == 3) {
+                        level3 += 1;
+                    }
+                }
+                convert.put("level1", String.valueOf(level1));
+                convert.put("level2", String.valueOf(level2));
+                convert.put("level3", String.valueOf(level3));
+            }
+
+
             convert.putIfAbsent("remarks", "cyber_user");
             convert.putAll(setRedisTo(cyberUserss.getAddress()));
             if (cyberUserss.getLevel() == 4) {

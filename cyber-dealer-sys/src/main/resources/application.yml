@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev
+    active: prd
 
 sa-token:
   # token名称 (同时也是cookie名称)
